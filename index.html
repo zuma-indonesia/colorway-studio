@@ -46,6 +46,17 @@ input[type=range]{width:96px;accent-color:#c2673f}
 .chipset{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
 .kw{font-size:11px;background:rgba(128,128,128,.12);color:var(--muted);border:1px solid var(--line);padding:4px 10px;border-radius:20px;cursor:pointer}
 .kw:hover{border-color:#c2673f;color:var(--fg)}
+.palbox{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.palrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:8px 0 10px}
+.pc{position:relative;width:30px;height:30px;border-radius:8px;border:1px solid rgba(0,0,0,.18);cursor:pointer}
+.pc i{position:absolute;top:-6px;right:-6px;width:15px;height:15px;border-radius:50%;background:var(--panel);border:1px solid var(--line);font-size:9px;font-style:normal;line-height:13px;text-align:center;color:var(--muted);display:none}
+.pc:hover i{display:block}
+.pcadd{position:relative;width:30px;height:30px;border:1px dashed var(--muted);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:17px;cursor:pointer;overflow:hidden}
+.pcadd:hover{border-color:#c2673f;color:var(--fg)}
+.pcadd input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.palthumb{height:44px;border-radius:6px;border:1px solid var(--line)}
+.pdots{display:inline-flex;gap:3px;vertical-align:middle;flex-wrap:wrap}
+.pdots span{width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
 
 .sku-bar{position:sticky;top:0;z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:22px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
 .dz{display:flex;align-items:center;gap:18px;border:2px dashed var(--line);border-radius:12px;padding:12px 16px;min-height:150px;transition:.15s;flex-wrap:wrap}
@@ -193,6 +204,14 @@ body.dark .login{background:#17181a}
   <p class="hint">Ketik mood/suasana. Sistem cocokkan ke pustaka warna & buat 6 kombinasi otomatis untuk model yang sedang dipilih.</p>
   <div class="crow"><input type="text" id="ckw" placeholder="Ketik tema custom…"><button class="b3" id="cgen">Generate 6 kombinasi →</button><button class="b2" id="csurprise">🎲 Kejutkan aku</button></div>
   <div class="chipset" id="kwchips"></div>
+  <div class="crow" style="margin-top:12px"><button class="b2" id="pup">📷 Upload palet (gambar Pantone / moodboard)</button>
+    <span class="hint" style="margin:0">atau tempel gambar dengan Ctrl/⌘+V. Gambar hanya diproses di browser ini.</span>
+    <input type="file" id="pfile" accept="image/*" class="hide"></div>
+  <div class="palbox hide" id="palbox">
+    <div class="crow"><img class="palthumb" id="pthumb" alt=""><span class="hint" style="margin:0" id="pinfo"></span></div>
+    <div class="palrow" id="palrow"></div>
+    <div class="crow"><button class="b3" id="pgen">Generate 6 kombinasi dari palet →</button><button class="b2" id="pclear">Tutup palet</button></div>
+  </div>
 </div>
 
 <div class="sku-bar">
@@ -440,17 +459,84 @@ function renderCustom(){
     const row=document.createElement('div');row.className='row custom-row';row.dataset.s=('custom '+cr.label+' '+cr.code).toLowerCase();
     row.innerHTML='<div class="rhead"><span class="rt">✨ '+cr.label+'</span><span class="rc">'+cr.code+'</span>'
       +'<span class="rtools"><button data-a="best">💡 Rapikan</button><button data-a="regen">🎲 Generate ulang</button><button data-a="del">🗑 Hapus</button></span></div>'
-      +'<div class="tdesc" style="margin:-4px 0 9px;font-size:10.5px">Palet: '+cr.matched.slice(0,7).join(' · ')+'</div>';
+      +'<div class="tdesc" style="margin:-4px 0 9px;font-size:10.5px">Palet: '+(cr.palette
+        ?'<span class="pdots">'+cr.palette.map(h=>'<span title="'+h+'" style="background:'+h+'"></span>').join('')+'</span> ('+cr.palette.length+' warna dari gambar)'
+        :cr.matched.slice(0,7).join(' · '))+'</div>';
     const g=document.createElement('div');g.className='cards';g.style.gridTemplateColumns='repeat('+(+zoom.value)+',1fr)';
     cr.combos.forEach((c,ci)=>g.appendChild(makeCard({code:cr.code,theme:'Custom'},{code:cr.label,name:cr.label},c,ci)));
     row.appendChild(g);
-    row.querySelector('[data-a="best"]').onclick=()=>{cr.combos=cr.combos.map(c=>autoFix(c));renderCustom()};
-    row.querySelector('[data-a="regen"]').onclick=()=>{cr.combos=buildCombos(pickPalette(cr.label)).map(c=>fromRoles(c));renderCustom()};
+    row.querySelector('[data-a="best"]').onclick=()=>{cr.combos=cr.combos.map(c=>cr.palette?snapPal(autoFix(c),cr.palette):autoFix(c));renderCustom()};
+    row.querySelector('[data-a="regen"]').onclick=()=>{cr.combos=cr.palette?combosFromPalette(cr.palette):buildCombos(pickPalette(cr.label)).map(c=>fromRoles(c));renderCustom()};
     row.querySelector('[data-a="del"]').onclick=()=>{customRows.splice(idx,1);renderCustom()};
     host.appendChild(row);
   });
   applyFilter();
 }
+
+/* ============ PALET DARI GAMBAR ============ */
+// Ambil warna dari area yang rata (blok swatch), abaikan teks & background, gabungkan warna yang nyaris sama.
+function extractPalette(img){
+  const S=Math.min(1,420/Math.max(img.naturalWidth,img.naturalHeight));
+  const w=Math.max(8,Math.round(img.naturalWidth*S)),h=Math.max(8,Math.round(img.naturalHeight*S));
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');x.drawImage(img,0,0,w,h);
+  const d=x.getImageData(0,0,w,h).data,N=w*h;
+  const diff=(i,j)=>Math.max(Math.abs(d[4*i]-d[4*j]),Math.abs(d[4*i+1]-d[4*j+1]),Math.abs(d[4*i+2]-d[4*j+2]));
+  // piksel "rata" = mirip dengan tetangga 2 piksel di sekitarnya (teks & tepi kotak tidak lolos)
+  const flat=new Uint8Array(N);
+  for(let y=2;y<h-2;y++)for(let X=2;X<w-2;X++){const i=y*w+X;
+    flat[i]=diff(i,i-2)<=6&&diff(i,i+2)<=6&&diff(i,i-2*w)<=6&&diff(i,i+2*w)<=6?1:0}
+  // tiap kotak warna = satu area piksel rata yang tersambung
+  const seen=new Uint8Array(N),regions=[],q=new Int32Array(N);
+  for(let s0=0;s0<N;s0++){
+    if(!flat[s0]||seen[s0])continue;
+    let qh=0,qt=0,n=0,r=0,g=0,b=0,edge=false;q[qt++]=s0;seen[s0]=1;
+    while(qh<qt){const i=q[qh++];n++;r+=d[4*i];g+=d[4*i+1];b+=d[4*i+2];
+      const X=i%w,y=(i-X)/w;if(X<4||y<4||X>w-5||y>h-5)edge=true;
+      for(const j of[i-1,i+1,i-w,i+w]){if(j<0||j>=N||seen[j]||!flat[j]||diff(i,j)>4)continue;seen[j]=1;q[qt++]=j}}
+    if(n>=N*.002)regions.push({n,edge,c:[r/n,g/n,b/n]});
+  }
+  regions.sort((a,b)=>b.n-a.n);
+  // background = area terbesar yang menyentuh pinggir gambar dan menutup >15% gambar
+  const bgR=regions.find(r=>r.edge&&r.n>N*.15);
+  const out=[];
+  regions.filter(r=>r!==bgR).forEach(r=>{
+    if(out.some(o=>Math.hypot(o[0]-r.c[0],o[1]-r.c[1],o[2]-r.c[2])<3))return;   // kotak dengan warna kembar persis cukup sekali
+    out.push(r.c)});
+  return out.slice(0,24).map(c=>rgb2hex(c)).sort((a,b)=>Lof(a)-Lof(b));
+}
+// ganti warna yang bukan dari palet (hitam/putih bawaan generator) dengan warna palet seterang/segelap mungkin
+function snapPal(c,pal){
+  const o={};for(const k in c){const v=c[k].toLowerCase();
+    o[k]=pal.includes(v)?v:pal.reduce((b,p)=>Math.abs(Lof(p)-Lof(v))<Math.abs(Lof(b)-Lof(v))?p:b,pal[0])}
+  return o;
+}
+function combosFromPalette(pal){return buildCombos(pal.map(h=>({name:h,hex:h}))).map(c=>snapPal(fromRoles(c),pal))}
+let PAL=null,palName='';
+function renderPal(){
+  document.getElementById('palbox').classList.toggle('hide',!PAL);if(!PAL)return;
+  document.getElementById('pinfo').textContent=PAL.length+' warna terbaca dari '+palName+'. Klik ✕ untuk buang, + untuk tambah manual.';
+  document.getElementById('palrow').innerHTML=PAL.map((h,i)=>'<span class="pc" title="'+h.toUpperCase()+'" style="background:'+h+'"><i data-i="'+i+'">✕</i></span>').join('')
+    +'<label class="pcadd" title="Tambah warna">+<input type="color" id="padd" value="#888888"></label>';
+  document.querySelectorAll('#palrow i').forEach(x=>x.onclick=()=>{PAL.splice(+x.dataset.i,1);renderPal()});
+  document.getElementById('padd').onchange=e=>{const v=e.target.value.toLowerCase();if(!PAL.includes(v))PAL.push(v);PAL.sort((a,b)=>Lof(a)-Lof(b));renderPal()};
+}
+function loadPaletteFile(f){
+  if(!f||!/^image\//.test(f.type))return;
+  const url=URL.createObjectURL(f),img=new Image();
+  img.onload=()=>{PAL=extractPalette(img);palName=f.name||'gambar tempelan';document.getElementById('pthumb').src=url;
+    if(!PAL.length)alert('Tidak ada blok warna yang terbaca dari gambar ini.');renderPal()};
+  img.src=url;
+}
+document.getElementById('pup').onclick=()=>document.getElementById('pfile').click();
+document.getElementById('pfile').onchange=e=>{loadPaletteFile(e.target.files[0]);e.target.value=''};
+document.addEventListener('paste',e=>{const it=[...(e.clipboardData||{}).items||[]].find(i=>i.type.startsWith('image/'));if(it)loadPaletteFile(it.getAsFile())});
+document.getElementById('pclear').onclick=()=>{PAL=null;renderPal()};
+document.getElementById('pgen').onclick=()=>{
+  if(!M||!PAL)return;if(PAL.length<2){alert('Palet minimal 2 warna.');return}
+  const st=STATE[M.id];st.seq++;const pal=PAL.slice();
+  customRows.unshift({code:'PL'+String(st.seq).padStart(2,'0'),label:'Palet '+palName.replace(/\.[a-z0-9]+$/i,''),palette:pal,matched:[],combos:combosFromPalette(pal)});
+  renderCustom();document.getElementById('customThemes').scrollIntoView({behavior:'smooth'});
+};
 
 const themesEl=document.getElementById('themes');
 const zoom=document.getElementById('zoom');
