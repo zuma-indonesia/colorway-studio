@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sandal Colorway Studio</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-serif;
+  --card:#fff;--line:#e9e6df;--muted:#96928a;--panel:#fff;--fg:#1c1c1a;
+  background:#f2f1ee;color:var(--fg);padding:22px 28px 130px;transition:background .25s,color .25s}
+body.dark{--card:#1f2124;--line:#2c2f33;--muted:#8b8f96;--panel:#1f2124;--fg:#f0efec;background:#17181a}
+body.kraft{background:#d9c8ad}
+h1{font-size:20px;letter-spacing:-.02em}
+.sub{font-size:12.5px;color:var(--muted);margin:4px 0 16px}
+
+.sandal{position:relative;width:100%;padding-top:49.03%;filter:drop-shadow(0 8px 10px rgba(0,0,0,.10))}
+.ly{position:absolute;inset:0;isolation:isolate}
+.ly::before,.ly::after{content:"";position:absolute;inset:0}
+.ly::before{background:var(--c);-webkit-mask-image:var(--img);mask-image:var(--img);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.ly::after{background-image:var(--img);background-size:100% 100%;background-repeat:no-repeat;mix-blend-mode:multiply}
+.ly.flat::after{display:none}
+.pairwrap{display:flex;align-items:center}
+.pairwrap>div{flex:1;min-width:0}
+.pairwrap .mirror{transform:scaleX(-1);margin-right:-16%;opacity:.9}
+.pairwrap.single .mirror{display:none}
+
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;padding:9px 12px;margin-bottom:14px;font-size:12px}
+.grp{display:flex;gap:6px;align-items:center}
+.lbl{color:var(--muted);font-size:11px}
+.seg{display:flex;background:rgba(128,128,128,.12);border-radius:8px;padding:2px}
+.seg button{background:none;color:var(--muted);padding:5px 10px;border-radius:6px;font-size:11px}
+.seg button.on{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.10)}
+input[type=search],input[type=text]{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit}
+input[type=search]{width:170px}
+input[type=range]{width:96px;accent-color:#c2673f}
+.sep{width:1px;height:22px;background:var(--line)}
+
+.custom{background:linear-gradient(180deg,rgba(194,103,63,.07),transparent);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:22px}
+.custom h2{font-size:14px;display:flex;align-items:center;gap:8px}
+.custom .tag{font-size:10px;background:#c2673f;color:#fff;padding:2px 7px;border-radius:20px;font-weight:600}
+.custom .hint{font-size:11.5px;color:var(--muted);margin:4px 0 10px}
+.crow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.crow input[type=text]{flex:1;min-width:220px;font-size:13px;padding:9px 12px}
+.chipset{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.kw{font-size:11px;background:rgba(128,128,128,.12);color:var(--muted);border:1px solid var(--line);padding:4px 10px;border-radius:20px;cursor:pointer}
+.kw:hover{border-color:#c2673f;color:var(--fg)}
+
+.sku-bar{position:sticky;top:0;z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:22px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.dz{display:flex;align-items:center;gap:18px;border:2px dashed var(--line);border-radius:12px;padding:12px 16px;min-height:150px;transition:.15s;flex-wrap:wrap}
+.dz.over{border-color:#c2673f;background:rgba(194,103,63,.06)}
+.dz-hint{color:var(--muted);font-size:13px}
+.dz-view{display:none;align-items:center;gap:18px;width:100%;flex-wrap:wrap}
+.dz-view.on{display:flex}
+.dz-sandal{width:260px;flex:0 0 auto}
+.f{display:flex;flex-direction:column;gap:4px;flex:1;min-width:200px}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:16px;letter-spacing:.03em}
+.nm{font-size:11.5px;color:var(--muted)}
+.hexrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.chip{display:flex;align-items:center;gap:5px;font-size:10px;font-family:ui-monospace,monospace;background:rgba(128,128,128,.10);border:1px solid var(--line);border-radius:20px;padding:3px 8px 3px 4px;cursor:pointer;color:var(--fg)}
+.chip:hover{border-color:#c2673f}
+.dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.2)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 8px;border-radius:20px;margin-top:6px;width:fit-content}
+.bg-ok{background:rgba(46,140,86,.16);color:#2e8c56}
+.bg-mid{background:rgba(200,150,30,.18);color:#9c7712}
+.bg-bad{background:rgba(200,60,50,.16);color:#c23c32}
+.editcol{display:flex;flex-direction:column;gap:5px;min-width:150px}
+.ec{display:flex;align-items:center;gap:6px}
+.ec input[type=color]{width:34px;height:24px;border:1px solid var(--line);border-radius:6px;padding:0;background:none;cursor:pointer}
+.ec input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.ec input[type=color]::-webkit-color-swatch{border:none;border-radius:4px}
+.ec .k{font-size:9px;color:var(--muted);width:56px;letter-spacing:.03em}
+.lock{cursor:pointer;font-size:11px;opacity:.3;user-select:none}
+.lock.on{opacity:1}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:230px}
+button{font:inherit;font-size:12px;cursor:pointer;border:none;border-radius:9px;padding:8px 12px;transition:.12s;color:var(--fg)}
+.b1{background:#1c1c1a;color:#fff}.b1:hover{background:#3d3d38}
+body.dark .b1{background:#f0efec;color:#17181a}
+.b2{background:rgba(128,128,128,.14);color:var(--muted)}.b2:hover{background:rgba(128,128,128,.24)}
+.b3{background:#c2673f;color:#fff}.b3:hover{background:#a9552f}
+
+.tblock{margin-bottom:30px}
+.thead{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.tsw{width:26px;height:26px;border-radius:7px;border:1px solid rgba(128,128,128,.35)}
+.tname{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.tdesc{font-size:11.5px;color:var(--muted)}
+.row{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:13px}
+.row.custom-row{border-color:#c2673f}
+.rhead{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.rt{font-size:13px;font-weight:600}
+.rc{font-family:ui-monospace,monospace;font-size:10px;color:var(--muted);background:rgba(128,128,128,.12);padding:2px 6px;border-radius:5px}
+.rtools{margin-left:auto;display:flex;gap:5px}
+.rtools button{padding:5px 9px;font-size:10.5px;background:rgba(128,128,128,.12);color:var(--muted)}
+.rtools button:hover{background:rgba(128,128,128,.22)}
+.cards{display:grid;gap:10px}
+.card{border:1px solid var(--line);border-radius:11px;padding:9px;background:rgba(128,128,128,.05);cursor:grab;transition:.14s;user-select:none;position:relative}
+.card:hover{box-shadow:0 6px 18px rgba(0,0,0,.12);transform:translateY(-2px);border-color:#c2673f}
+.card.dragging{opacity:.35}
+.cid{font-family:ui-monospace,monospace;font-size:9px;color:var(--muted);margin-bottom:3px;display:flex;align-items:center}
+.cid .pin{margin-left:auto;cursor:pointer;opacity:.35;font-size:11px}
+.cid .pin:hover{opacity:1}
+.picks{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:7px}
+.pk input{width:100%;height:20px;border:1px solid var(--line);border-radius:5px;padding:0;background:none;cursor:pointer}
+.pk input::-webkit-color-swatch-wrapper{padding:1px}
+.pk input::-webkit-color-swatch{border:none;border-radius:3px}
+.pk label{display:block;font-size:7px;color:var(--muted);text-align:center;margin-top:2px;letter-spacing:.02em;white-space:nowrap}
+.cbtn{position:absolute;right:9px;bottom:52px;opacity:0;transition:.12s}
+.card:hover .cbtn{opacity:1}
+.cbtn button{padding:4px 8px;font-size:10px;background:#c2673f;color:#fff;border-radius:6px}
+.scbwrap{position:absolute;left:13px;top:22px}
+.scb{font-size:9px;font-weight:700;color:#fff;padding:2px 6px;border-radius:20px;font-family:ui-monospace,monospace;box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:help}
+/* SKU builder score panel */
+.scorepanel{display:flex;flex-direction:column;gap:6px;min-width:190px}
+.scorebig{display:flex;align-items:center;gap:8px}
+.scorebig .num{font-size:26px;font-weight:800;font-family:ui-monospace,monospace;line-height:1}
+.scorebig .tier{font-size:11px;font-weight:700;color:#fff;padding:2px 8px;border-radius:20px}
+.bars{display:flex;flex-direction:column;gap:3px}
+.bar{display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--muted)}
+.bar .track{flex:1;height:5px;background:rgba(128,128,128,.2);border-radius:3px;overflow:hidden}
+.bar .fill{height:100%;border-radius:3px}
+.snotes{font-size:10px;color:var(--muted);line-height:1.4}
+.snotes .n{display:block}
+
+.tray{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -8px 30px rgba(0,0,0,.12);padding:10px 20px;display:none;align-items:center;gap:14px}
+.tray.on{display:flex}
+.tray h3{font-size:12px}
+.tslots{display:flex;gap:10px;flex:1;overflow-x:auto}
+.tslot{width:160px;flex:0 0 auto;border:1px solid var(--line);border-radius:10px;padding:6px;background:rgba(128,128,128,.06);position:relative}
+.tslot .x{position:absolute;top:3px;right:6px;font-size:11px;color:var(--muted);cursor:pointer}
+.tslot .lb{font-family:ui-monospace,monospace;font-size:9px;color:var(--muted);margin-bottom:2px}
+
+.shead{display:flex;align-items:center;gap:8px;margin:30px 0 12px;flex-wrap:wrap}
+.shead h2{font-size:15px}.sc{font-size:11px;color:var(--muted)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:10px}
+.sv{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;gap:10px;align-items:center;position:relative}
+.sv .sd{width:120px;flex:0 0 auto}
+.rm{position:absolute;top:6px;right:9px;font-size:13px;color:var(--muted);cursor:pointer;line-height:1}
+.rm:hover{color:#c23c32}
+.svc{font-family:ui-monospace,monospace;font-size:11px;font-weight:700}
+.svn{font-size:10.5px;color:var(--muted);margin-top:2px}
+.mh{display:flex;gap:3px;margin-top:5px}
+.md{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.15)}
+.empty{font-size:12px;color:var(--muted)}
+.hide{display:none !important}
+#cv{display:none}
+/* pilih model (gender / series) */
+.modelbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:10px;font-size:12px}
+.modelbar .minfo{margin-left:auto;font-size:11px;color:var(--muted)}
+.warn{background:rgba(200,150,30,.14);color:#9c7712;border:1px solid rgba(200,150,30,.35);border-radius:10px;padding:8px 12px;font-size:11.5px;margin-bottom:12px;line-height:1.5}
+.warn b{display:block;margin-bottom:2px}
+.svm{font-size:9.5px;color:#c2673f;font-weight:600;margin-top:1px}
+.login{position:fixed;inset:0;z-index:200;background:var(--bg,#f2f1ee);display:flex;align-items:center;justify-content:center;padding:16px}
+body.dark .login{background:#17181a}
+.lbox{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 26px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.lbox p{font-size:12.5px;color:var(--muted);margin:6px 0 18px;line-height:1.5}
+.lbox button{font-size:13px;padding:10px 18px}
+.lbox .lmsg{color:#c23c32;margin:14px 0 0}
+.lbox .lmsg:empty{display:none}
+.loading{font-size:13px;color:var(--muted);padding:30px 0}
+</style></head><body>
+<div class="login" id="login"><div class="lbox">
+  <h1>Sandal Colorway Studio</h1>
+  <p>Login pakai akun Google Zuma (@zuma.id).<br>Hanya akun yang punya akses ke folder Drive "Colorway Studio" yang bisa melihat sandal.</p>
+  <button class="b3" id="lbtn">Login dengan Google</button>
+  <p class="lmsg" id="lmsg"></p>
+</div></div>
+
+<h1>Sandal Colorway Studio <span style="font-size:12px;color:var(--muted);font-weight:400" id="mtitle"></span></h1>
+<p class="sub" id="msub">Memuat model…</p>
+
+<div class="modelbar">
+  <div class="grp"><span class="lbl">Gender</span><div class="seg" id="gseg"></div></div>
+  <div class="sep"></div>
+  <div class="grp"><span class="lbl">Series</span><div class="seg" id="sseg"></div></div>
+  <span class="minfo"><span id="minfo"></span> · <span id="who"></span> <button class="b2" id="logout" style="padding:4px 9px;font-size:10.5px;margin-left:4px">Keluar</button></span>
+</div>
+<div class="warn hide" id="warn"></div>
+
+<div class="toolbar">
+  <div class="grp"><span class="lbl">Backdrop</span><div class="seg" id="bgseg"><button data-b="light" class="on">Studio</button><button data-b="dark">Dark</button><button data-b="kraft">Kraft</button></div></div>
+  <div class="sep"></div>
+  <div class="grp"><span class="lbl">Tampilan</span><div class="seg" id="viewseg"><button data-v="single" class="on">Single</button><button data-v="pair">Pair</button></div></div>
+  <div class="sep"></div>
+  <div class="grp"><span class="lbl">Kolom</span><input type="range" id="zoom" min="2" max="6" step="1" value="5"></div>
+  <div class="sep"></div>
+  <div class="grp"><input type="search" id="q" placeholder="Cari tema / kode…"></div>
+  <div class="grp" style="margin-left:auto"><button class="b2" id="shuffleAll">🎲 Acak semua</button><button class="b2" id="resetAll">↺ Reset preset</button></div>
+</div>
+
+<div class="custom">
+  <h2>✨ Custom Tema <span class="tag">GENERATE</span></h2>
+  <p class="hint">Ketik mood/suasana. Sistem cocokkan ke pustaka warna & buat 6 kombinasi otomatis untuk model yang sedang dipilih.</p>
+  <div class="crow"><input type="text" id="ckw" placeholder="Ketik tema custom…"><button class="b3" id="cgen">Generate 6 kombinasi →</button><button class="b2" id="csurprise">🎲 Kejutkan aku</button></div>
+  <div class="chipset" id="kwchips"></div>
+</div>
+
+<div class="sku-bar">
+  <div class="dz" id="dz">
+    <span class="dz-hint" id="hint">⬇ Drag salah satu kombinasi ke sini untuk dijadikan SKU</span>
+    <div class="dz-view" id="view">
+      <div class="dz-sandal" id="bigSandal"></div>
+      <div class="f"><div class="code" id="skuCode">—</div><div class="nm" id="skuName">—</div><div class="hexrow" id="skuHex"></div><div id="contrast"></div></div>
+      <div class="scorepanel" id="scorepanel"></div>
+      <div class="editcol" id="editcol"></div>
+      <div class="acts">
+        <button class="b1" id="save">💾 Simpan SKU</button><button class="b3" id="autofix">✨ Auto-fix</button>
+        <button class="b3" id="suggest">💡 Sarankan bagus</button><button class="b2" id="dice">🎲 Acak</button>
+        <button class="b2" id="harmony">🎨 Harmoni</button><button class="b2" id="png">⇩ PNG</button>
+        <button class="b2" id="toCmp">⇄ Bandingkan</button><button class="b2" id="clear">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="customThemes"></div>
+<div id="themes"><div class="loading">Memuat model…</div></div>
+
+<div class="shead"><h2>SKU Tersimpan</h2><span class="sc" id="cnt">0 SKU</span>
+  <button class="b2" id="csv" style="margin-left:auto">⇩ CSV</button><button class="b2" id="jsonx">⇩ JSON</button>
+  <button class="b2" id="sheet">🖼 Contact sheet PNG</button><button class="b2" id="imp">⇧ Import JSON</button>
+  <input type="file" id="impf" accept="application/json" class="hide"></div>
+<div class="sgrid" id="sgrid"><span class="empty">Belum ada SKU tersimpan.</span></div>
+
+<div class="tray" id="tray"><h3>Compare</h3><div class="tslots" id="tslots"></div><button class="b2" id="cmpClear">Kosongkan</button></div>
+<canvas id="cv"></canvas>
+
+<script>
+const PRESET=[{"theme": "Pure Timeless", "code": "PT", "accent": "#e6e4df", "desc": "Netral abadi \u2014 putih, abu, hitam.", "subs": [{"name": "Monochrome Core", "code": "MC", "combos": [{"sole": "#ffffff", "upper": "#ffffff", "logo": "#1a1a1a", "stripeB": "#1a1a1a", "stripeA": "#1a1a1a"}, {"sole": "#1a1a1a", "upper": "#1a1a1a", "logo": "#ffffff", "stripeB": "#ffffff", "stripeA": "#ffffff"}, {"sole": "#f5f5f5", "upper": "#d9d9d9", "logo": "#1a1a1a", "stripeB": "#1a1a1a", "stripeA": "#1a1a1a"}, {"sole": "#3d3d3d", "upper": "#ffffff", "logo": "#8c8c8c", "stripeB": "#8c8c8c", "stripeA": "#ffffff"}, {"sole": "#2b2b2b", "upper": "#6e6e6e", "logo": "#ffffff", "stripeB": "#ffffff", "stripeA": "#ffffff"}, {"sole": "#e6e6e6", "upper": "#b3b3b3", "logo": "#2b2b2b", "stripeB": "#2b2b2b", "stripeA": "#2b2b2b"}]}, {"name": "Ivory Minimal", "code": "IM", "combos": [{"sole": "#f7f3ea", "upper": "#f7f3ea", "logo": "#c9bfa8", "stripeB": "#c9bfa8", "stripeA": "#c9bfa8"}, {"sole": "#fdfaf3", "upper": "#efe8d9", "logo": "#8a8071", "stripeB": "#8a8071", "stripeA": "#8a8071"}, {"sole": "#b8ae97", "upper": "#d8cfbb", "logo": "#fdfaf3", "stripeB": "#fdfaf3", "stripeA": "#b8ae97"}, {"sole": "#e5ddcc", "upper": "#fdfaf3", "logo": "#a89c85", "stripeB": "#a89c85", "stripeA": "#a89c85"}, {"sole": "#8a8071", "upper": "#b8ae97", "logo": "#f7f3ea", "stripeB": "#f7f3ea", "stripeA": "#f7f3ea"}, {"sole": "#d8cfbb", "upper": "#f2ecdf", "logo": "#6f6656", "stripeB": "#6f6656", "stripeA": "#6f6656"}]}, {"name": "Ink Contrast", "code": "IC", "combos": [{"sole": "#f5f5f5", "upper": "#111111", "logo": "#f5f5f5", "stripeB": "#111111", "stripeA": "#111111"}, {"sole": "#111111", "upper": "#f5f5f5", "logo": "#111111", "stripeB": "#f5f5f5", "stripeA": "#f5f5f5"}, {"sole": "#4a4a4a", "upper": "#232323", "logo": "#f5f5f5", "stripeB": "#f5f5f5", "stripeA": "#f5f5f5"}, {"sole": "#e0e0e0", "upper": "#111111", "logo": "#9e9e9e", "stripeB": "#9e9e9e", "stripeA": "#111111"}, {"sole": "#111111", "upper": "#c7c7c7", "logo": "#111111", "stripeB": "#c7c7c7", "stripeA": "#c7c7c7"}, {"sole": "#1a1a1a", "upper": "#3a3a3a", "logo": "#e0e0e0", "stripeB": "#e0e0e0", "stripeA": "#e0e0e0"}]}]}, {"theme": "Warm Earth", "code": "WE", "accent": "#b5895c", "desc": "Hangat & organik \u2014 pasir, tanah liat, kopi.", "subs": [{"name": "Desert Sand", "code": "DS", "combos": [{"sole": "#e8d5b5", "upper": "#d8bd94", "logo": "#fdfaf3", "stripeB": "#d8bd94", "stripeA": "#d8bd94"}, {"sole": "#f2e6cf", "upper": "#e8d5b5", "logo": "#8a6b43", "stripeB": "#8a6b43", "stripeA": "#8a6b43"}, {"sole": "#6f5535", "upper": "#a8865a", "logo": "#e8d5b5", "stripeB": "#e8d5b5", "stripeA": "#e8d5b5"}, {"sole": "#d8bd94", "upper": "#f2e6cf", "logo": "#5c452a", "stripeB": "#5c452a", "stripeA": "#5c452a"}, {"sole": "#a8865a", "upper": "#6f5535", "logo": "#d8bd94", "stripeB": "#d8bd94", "stripeA": "#6f5535"}, {"sole": "#3f3122", "upper": "#c2a273", "logo": "#fdfaf3", "stripeB": "#fdfaf3", "stripeA": "#fdfaf3"}]}, {"name": "Terracotta Clay", "code": "TC", "combos": [{"sole": "#e0b99c", "upper": "#b5502e", "logo": "#f6ece1", "stripeB": "#f6ece1", "stripeA": "#b5502e"}, {"sole": "#f6ece1", "upper": "#e0b99c", "logo": "#7a2f19", "stripeB": "#7a2f19", "stripeA": "#7a2f19"}, {"sole": "#4a1d10", "upper": "#7a2f19", "logo": "#e0b99c", "stripeB": "#e0b99c", "stripeA": "#e0b99c"}, {"sole": "#c98a68", "upper": "#f6ece1", "logo": "#b5502e", "stripeB": "#b5502e", "stripeA": "#b5502e"}, {"sole": "#7a2f19", "upper": "#c96a45", "logo": "#f6ece1", "stripeB": "#f6ece1", "stripeA": "#f6ece1"}, {"sole": "#e8cdb8", "upper": "#d99873", "logo": "#4a1d10", "stripeB": "#4a1d10", "stripeA": "#4a1d10"}]}, {"name": "Coffee Bark", "code": "CB", "combos": [{"sole": "#6f5540", "upper": "#4a3728", "logo": "#e6dbc9", "stripeB": "#e6dbc9", "stripeA": "#e6dbc9"}, {"sole": "#3b2a1e", "upper": "#3b2a1e", "logo": "#c9a876", "stripeB": "#c9a876", "stripeA": "#c9a876"}, {"sole": "#e6dbc9", "upper": "#c9a876", "logo": "#3b2a1e", "stripeB": "#3b2a1e", "stripeA": "#3b2a1e"}, {"sole": "#2a1d14", "upper": "#6f5540", "logo": "#e6dbc9", "stripeB": "#e6dbc9", "stripeA": "#e6dbc9"}, {"sole": "#4a3728", "upper": "#e6dbc9", "logo": "#8a6b43", "stripeB": "#8a6b43", "stripeA": "#e6dbc9"}, {"sole": "#c9a876", "upper": "#a58a68", "logo": "#2a1d14", "stripeB": "#2a1d14", "stripeA": "#2a1d14"}]}]}, {"theme": "Cool Stone", "code": "CS", "accent": "#7f8a8c", "desc": "Dingin & mineral \u2014 batu, kabut, laut dalam.", "subs": [{"name": "Slate Mist", "code": "SM", "combos": [{"sole": "#aeb6b9", "upper": "#6b757a", "logo": "#f0f2f3", "stripeB": "#f0f2f3", "stripeA": "#6b757a"}, {"sole": "#f0f2f3", "upper": "#c9d0d3", "logo": "#39424a", "stripeB": "#39424a", "stripeA": "#39424a"}, {"sole": "#20262b", "upper": "#39424a", "logo": "#c9d0d3", "stripeB": "#c9d0d3", "stripeA": "#c9d0d3"}, {"sole": "#6b757a", "upper": "#f0f2f3", "logo": "#8f989c", "stripeB": "#8f989c", "stripeA": "#f0f2f3"}, {"sole": "#4e585e", "upper": "#20262b", "logo": "#f0f2f3", "stripeB": "#f0f2f3", "stripeA": "#f0f2f3"}, {"sole": "#dfe3e5", "upper": "#aeb6b9", "logo": "#20262b", "stripeB": "#20262b", "stripeA": "#20262b"}]}, {"name": "Sage Granite", "code": "SG", "combos": [{"sole": "#9aa387", "upper": "#6b7358", "logo": "#f2f0e6", "stripeB": "#f2f0e6", "stripeA": "#6b7358"}, {"sole": "#e6e8db", "upper": "#b8c0a4", "logo": "#3e4433", "stripeB": "#3e4433", "stripeA": "#3e4433"}, {"sole": "#242a1d", "upper": "#3e4433", "logo": "#b8c0a4", "stripeB": "#b8c0a4", "stripeA": "#b8c0a4"}, {"sole": "#4f5742", "upper": "#9aa387", "logo": "#f2f0e6", "stripeB": "#f2f0e6", "stripeA": "#f2f0e6"}, {"sole": "#b8c0a4", "upper": "#e6e8db", "logo": "#6b7358", "stripeB": "#6b7358", "stripeA": "#6b7358"}, {"sole": "#d5d9c4", "upper": "#8b9375", "logo": "#242a1d", "stripeB": "#242a1d", "stripeA": "#242a1d"}]}, {"name": "Ocean Basalt", "code": "OB", "combos": [{"sole": "#3f6076", "upper": "#1f3a4d", "logo": "#e8eef2", "stripeB": "#e8eef2", "stripeA": "#e8eef2"}, {"sole": "#e8eef2", "upper": "#a9c3d1", "logo": "#1f3a4d", "stripeB": "#1f3a4d", "stripeA": "#1f3a4d"}, {"sole": "#12232f", "upper": "#12232f", "logo": "#a9c3d1", "stripeB": "#a9c3d1", "stripeA": "#a9c3d1"}, {"sole": "#0d1a23", "upper": "#3f6076", "logo": "#e8eef2", "stripeB": "#e8eef2", "stripeA": "#e8eef2"}, {"sole": "#1f3a4d", "upper": "#e8eef2", "logo": "#5d8299", "stripeB": "#5d8299", "stripeA": "#e8eef2"}, {"sole": "#c8dae4", "upper": "#7ba0b5", "logo": "#0d1a23", "stripeB": "#0d1a23", "stripeA": "#0d1a23"}]}]}];
+const COLORS=[{"name": "Pure White", "hex": "#ffffff", "tags": ["putih", "white", "netral", "neutral", "terang", "light", "mono", "bersih", "clean", "minimal"]}, {"name": "Ivory", "hex": "#f7f3ea", "tags": ["ivory", "gading", "cream", "krem", "netral", "hangat", "warm", "soft", "light", "vintage"]}, {"name": "Bone", "hex": "#ece5d8", "tags": ["bone", "tulang", "cream", "netral", "light", "soft", "natural"]}, {"name": "Oat", "hex": "#ddd3c0", "tags": ["oat", "oatmeal", "natural", "netral", "earthy", "soft", "light"]}, {"name": "Greige", "hex": "#b6ac9c", "tags": ["greige", "abu", "taupe", "netral", "neutral", "kalem", "muted", "earthy"]}, {"name": "Ash", "hex": "#8f8b83", "tags": ["ash", "abu", "grey", "gray", "netral", "muted", "stone"]}, {"name": "Charcoal", "hex": "#3a3a38", "tags": ["charcoal", "arang", "gelap", "dark", "netral", "mono", "stone"]}, {"name": "Graphite", "hex": "#2b2c2e", "tags": ["graphite", "gelap", "dark", "mono", "steel", "night"]}, {"name": "Jet Black", "hex": "#141414", "tags": ["hitam", "black", "gelap", "dark", "mono", "bold", "night"]}, {"name": "Pearl", "hex": "#eceae3", "tags": ["pearl", "mutiara", "light", "soft", "netral", "pastel"]}, {"name": "Silver", "hex": "#c9c9c9", "tags": ["silver", "perak", "grey", "metal", "mono", "light", "cool"]}, {"name": "Sand", "hex": "#e3cfa6", "tags": ["sand", "pasir", "gurun", "desert", "earthy", "hangat", "warm", "natural", "beach", "pantai", "tropis", "summer"]}, {"name": "Warm Tan", "hex": "#d3b083", "tags": ["tan", "cokelat muda", "earthy", "hangat", "warm", "natural", "desert", "vintage"]}, {"name": "Camel", "hex": "#b98a54", "tags": ["camel", "cokelat", "earthy", "hangat", "warm", "autumn", "gugur", "leather"]}, {"name": "Caramel", "hex": "#a9682f", "tags": ["caramel", "karamel", "cokelat", "warm", "hangat", "autumn", "coffee", "kopi", "sweet"]}, {"name": "Terracotta", "hex": "#b5502e", "tags": ["terracotta", "clay", "tanah liat", "earthy", "warm", "hangat", "sunset", "senja", "autumn", "gugur", "vibrant"]}, {"name": "Brick", "hex": "#8f3b25", "tags": ["brick", "bata", "merah", "red", "warm", "autumn", "gugur", "earthy", "vintage"]}, {"name": "Rust", "hex": "#9c4a1e", "tags": ["rust", "karat", "autumn", "gugur", "warm", "earthy", "desert", "gurun"]}, {"name": "Ochre", "hex": "#c68a2a", "tags": ["ochre", "oker", "kuning", "mustard", "warm", "autumn", "earthy", "desert"]}, {"name": "Mustard", "hex": "#d0a021", "tags": ["mustard", "mustar", "kuning", "yellow", "warm", "autumn", "gugur", "vibrant", "retro", "vintage"]}, {"name": "Espresso", "hex": "#3b2a1e", "tags": ["espresso", "kopi", "coffee", "cokelat", "chocolate", "gelap", "dark", "warm", "earthy"]}, {"name": "Mocha", "hex": "#5c4433", "tags": ["mocha", "kopi", "coffee", "cokelat", "warm", "earthy", "natural"]}, {"name": "Chocolate", "hex": "#4a3728", "tags": ["chocolate", "cokelat", "coffee", "kopi", "dark", "warm", "earthy", "autumn"]}, {"name": "Clay Pink", "hex": "#c98a68", "tags": ["clay", "dusty", "pink", "rose", "warm", "earthy", "muted", "sunset", "senja"]}, {"name": "Dusty Rose", "hex": "#c58a86", "tags": ["rose", "pink", "dusty", "muted", "vintage", "soft", "romantic", "pastel"]}, {"name": "Peach", "hex": "#f6c6a0", "tags": ["peach", "persik", "pastel", "soft", "warm", "sweet", "summer", "tropis"]}, {"name": "Coral", "hex": "#e8825a", "tags": ["coral", "karang", "sunset", "senja", "tropis", "tropical", "vibrant", "warm", "summer", "pantai", "beach"]}, {"name": "Tangerine", "hex": "#e8722d", "tags": ["tangerine", "orange", "jeruk", "vibrant", "tropis", "tropical", "sunset", "senja", "cerah", "bright"]}, {"name": "Marigold", "hex": "#f0a81f", "tags": ["marigold", "gold", "emas", "kuning", "vibrant", "tropis", "cerah", "bright", "summer"]}, {"name": "Cherry Red", "hex": "#c62828", "tags": ["cherry", "merah", "red", "vibrant", "bold", "cerah", "bright", "love"]}, {"name": "Crimson", "hex": "#9e1b2f", "tags": ["crimson", "merah", "red", "dark", "bold", "vibrant", "wine"]}, {"name": "Wine", "hex": "#6d2233", "tags": ["wine", "anggur", "maroon", "dark", "vintage", "warm", "bold"]}, {"name": "Sage", "hex": "#9aa387", "tags": ["sage", "hijau", "green", "cool", "muted", "kalem", "natural", "earthy", "calm"]}, {"name": "Moss", "hex": "#6b7358", "tags": ["moss", "lumut", "hijau", "green", "forest", "hutan", "earthy", "muted", "natural"]}, {"name": "Olive", "hex": "#5b5b34", "tags": ["olive", "zaitun", "hijau", "green", "earthy", "military", "muted", "autumn", "natural"]}, {"name": "Forest Green", "hex": "#2f4a34", "tags": ["forest", "hutan", "hijau", "green", "dark", "nature", "natural", "deep"]}, {"name": "Pine", "hex": "#20402f", "tags": ["pine", "pinus", "hijau", "green", "forest", "hutan", "dark", "deep", "night"]}, {"name": "Mint", "hex": "#a3e0c8", "tags": ["mint", "hijau", "green", "pastel", "fresh", "segar", "cool", "sweet", "candy", "permen"]}, {"name": "Seafoam", "hex": "#88c9b3", "tags": ["seafoam", "laut", "ocean", "teal", "hijau", "green", "cool", "fresh", "pantai", "beach", "tropis"]}, {"name": "Emerald", "hex": "#1f8a5b", "tags": ["emerald", "zamrud", "hijau", "green", "vibrant", "jewel", "bold", "tropis"]}, {"name": "Teal", "hex": "#2f8a8a", "tags": ["teal", "tosca", "cool", "ocean", "laut", "vibrant", "fresh", "tropis"]}, {"name": "Turquoise", "hex": "#1fb6c1", "tags": ["turquoise", "tosca", "cyan", "cool", "tropis", "tropical", "vibrant", "laut", "ocean", "cerah", "bright"]}, {"name": "Sky", "hex": "#8ec5e6", "tags": ["sky", "langit", "biru", "blue", "pastel", "cool", "light", "fresh", "summer"]}, {"name": "Powder Blue", "hex": "#b9d4e3", "tags": ["powder", "biru", "blue", "pastel", "soft", "light", "cool", "calm"]}, {"name": "Denim", "hex": "#4a6a8a", "tags": ["denim", "biru", "blue", "cool", "muted", "casual", "vintage"]}, {"name": "Ocean Blue", "hex": "#2f5f8a", "tags": ["ocean", "laut", "biru", "blue", "cool", "deep", "fresh", "pantai", "beach"]}, {"name": "Cobalt", "hex": "#2645b8", "tags": ["cobalt", "biru", "blue", "vibrant", "bold", "cerah", "bright", "deep"]}, {"name": "Navy", "hex": "#1f2f4d", "tags": ["navy", "biru", "blue", "dark", "deep", "night", "malam", "classic", "cool"]}, {"name": "Midnight", "hex": "#141d33", "tags": ["midnight", "malam", "night", "navy", "biru", "dark", "deep", "gelap"]}, {"name": "Indigo", "hex": "#33306b", "tags": ["indigo", "nila", "ungu", "purple", "biru", "blue", "dark", "night", "malam", "deep"]}, {"name": "Slate", "hex": "#4e585e", "tags": ["slate", "batu", "stone", "abu", "grey", "cool", "muted", "dark"]}, {"name": "Steel", "hex": "#6b757a", "tags": ["steel", "baja", "abu", "grey", "cool", "muted", "stone", "metal"]}, {"name": "Stone Grey", "hex": "#aeb6b9", "tags": ["stone", "batu", "abu", "grey", "light", "cool", "muted", "neutral"]}, {"name": "Ice", "hex": "#dfe6ea", "tags": ["ice", "es", "biru", "blue", "light", "cool", "pastel", "fresh", "winter"]}, {"name": "Mist", "hex": "#c4ccce", "tags": ["mist", "kabut", "abu", "grey", "light", "cool", "soft", "muted"]}, {"name": "Lavender", "hex": "#c4b7e8", "tags": ["lavender", "ungu", "purple", "pastel", "soft", "calm", "spring", "sweet"]}, {"name": "Lilac", "hex": "#c9a0d6", "tags": ["lilac", "ungu", "purple", "pastel", "soft", "spring", "sweet", "candy"]}, {"name": "Plum", "hex": "#5d3a5a", "tags": ["plum", "prune", "ungu", "purple", "dark", "wine", "deep", "autumn"]}, {"name": "Violet", "hex": "#6b3fa0", "tags": ["violet", "ungu", "purple", "vibrant", "bold", "jewel", "deep"]}, {"name": "Fuchsia", "hex": "#c2317f", "tags": ["fuchsia", "magenta", "pink", "vibrant", "bold", "cerah", "bright", "tropis"]}, {"name": "Hot Pink", "hex": "#e0448a", "tags": ["pink", "hot", "vibrant", "bold", "cerah", "bright", "playful", "candy", "permen", "love"]}, {"name": "Blush", "hex": "#f2c6d0", "tags": ["blush", "pink", "pastel", "soft", "romantic", "sweet", "spring", "light"]}, {"name": "Bubblegum", "hex": "#f299c0", "tags": ["bubblegum", "permen", "candy", "pink", "pastel", "sweet", "playful", "cerah"]}, {"name": "Butter", "hex": "#f5e6a3", "tags": ["butter", "mentega", "kuning", "yellow", "pastel", "soft", "light", "sweet", "spring"]}, {"name": "Lemon", "hex": "#eddb4d", "tags": ["lemon", "kuning", "yellow", "vibrant", "cerah", "bright", "fresh", "summer", "citrus", "candy"]}, {"name": "Lime", "hex": "#a8cf45", "tags": ["lime", "hijau", "green", "vibrant", "cerah", "bright", "fresh", "tropis", "citrus"]}, {"name": "Pistachio", "hex": "#c3d99b", "tags": ["pistachio", "hijau", "green", "pastel", "soft", "fresh", "spring", "sweet"]}];
+const RECIPES={"sunset": ["Midnight", "Plum", "Coral", "Tangerine", "Marigold", "Dusty Rose", "Ivory"], "senja": ["Midnight", "Plum", "Coral", "Tangerine", "Marigold", "Dusty Rose", "Ivory"], "ocean": ["Navy", "Ocean Blue", "Teal", "Seafoam", "Sand", "Ice", "Coral"], "laut": ["Navy", "Ocean Blue", "Teal", "Seafoam", "Sand", "Ice", "Coral"], "pantai": ["Ocean Blue", "Turquoise", "Seafoam", "Sand", "Ivory", "Coral", "Marigold"], "beach": ["Ocean Blue", "Turquoise", "Seafoam", "Sand", "Ivory", "Coral", "Marigold"], "tropis": ["Turquoise", "Lime", "Coral", "Marigold", "Fuchsia", "Emerald", "Ivory"], "tropical": ["Turquoise", "Lime", "Coral", "Marigold", "Fuchsia", "Emerald", "Ivory"], "forest": ["Pine", "Forest Green", "Moss", "Olive", "Sage", "Oat", "Bone"], "hutan": ["Pine", "Forest Green", "Moss", "Olive", "Sage", "Oat", "Bone"], "coffee": ["Espresso", "Chocolate", "Mocha", "Caramel", "Warm Tan", "Ivory", "Bone"], "kopi": ["Espresso", "Chocolate", "Mocha", "Caramel", "Warm Tan", "Ivory", "Bone"], "desert": ["Sand", "Warm Tan", "Terracotta", "Rust", "Ochre", "Bone", "Espresso"], "gurun": ["Sand", "Warm Tan", "Terracotta", "Rust", "Ochre", "Bone", "Espresso"], "autumn": ["Rust", "Mustard", "Brick", "Olive", "Chocolate", "Camel", "Ivory"], "gugur": ["Rust", "Mustard", "Brick", "Olive", "Chocolate", "Camel", "Ivory"], "night": ["Midnight", "Indigo", "Navy", "Charcoal", "Steel", "Silver", "Ice"], "malam": ["Midnight", "Indigo", "Navy", "Charcoal", "Steel", "Silver", "Ice"], "candy": ["Bubblegum", "Mint", "Lemon", "Lilac", "Coral", "Sky", "Pearl"], "permen": ["Bubblegum", "Mint", "Lemon", "Lilac", "Coral", "Sky", "Pearl"], "pastel": ["Blush", "Powder Blue", "Butter", "Mint", "Lavender", "Peach", "Pearl"], "mono": ["Jet Black", "Charcoal", "Ash", "Silver", "Stone Grey", "Pearl", "Pure White"], "monochrome": ["Jet Black", "Charcoal", "Ash", "Silver", "Stone Grey", "Pearl", "Pure White"], "vintage": ["Camel", "Mustard", "Wine", "Olive", "Dusty Rose", "Ivory", "Espresso"], "spring": ["Pistachio", "Blush", "Butter", "Lilac", "Sky", "Mint", "Pearl"], "musim semi": ["Pistachio", "Blush", "Butter", "Lilac", "Sky", "Mint", "Pearl"], "berry": ["Wine", "Fuchsia", "Plum", "Crimson", "Dusty Rose", "Blush", "Ivory"], "jewel": ["Emerald", "Violet", "Cobalt", "Crimson", "Marigold", "Charcoal", "Ivory"], "military": ["Olive", "Moss", "Charcoal", "Sand", "Oat", "Espresso", "Bone"], "mineral": ["Slate", "Steel", "Stone Grey", "Sage", "Ice", "Charcoal", "Mist"], "sakura": ["Blush", "Bubblegum", "Dusty Rose", "Ivory", "Sage", "Pearl", "Plum"], "citrus": ["Lemon", "Tangerine", "Lime", "Marigold", "Coral", "Ivory", "Pistachio"], "cokelat": ["Espresso", "Chocolate", "Mocha", "Caramel", "Warm Tan", "Ivory", "Bone"], "hangat": ["Terracotta", "Caramel", "Sand", "Coral", "Mustard", "Ivory", "Espresso"], "warm": ["Terracotta", "Caramel", "Sand", "Coral", "Mustard", "Ivory", "Espresso"], "dingin": ["Navy", "Teal", "Slate", "Sage", "Ice", "Steel", "Mist"], "cool": ["Navy", "Teal", "Slate", "Sage", "Ice", "Steel", "Mist"], "netral": ["Ivory", "Oat", "Greige", "Ash", "Charcoal", "Bone", "Pearl"], "neutral": ["Ivory", "Oat", "Greige", "Ash", "Charcoal", "Bone", "Pearl"], "cerah": ["Turquoise", "Marigold", "Coral", "Fuchsia", "Lime", "Cobalt", "Ivory"], "vibrant": ["Turquoise", "Marigold", "Coral", "Fuchsia", "Lime", "Cobalt", "Ivory"], "bold": ["Crimson", "Cobalt", "Emerald", "Jet Black", "Marigold", "Fuchsia", "Ivory"]};
+/* ============ MODEL (dibaca langsung dari folder Google Drive, lihat bagian LOGIN di bawah) ============ */
+// Preset & generator bekerja dengan 5 "peran" warna: sole, upper, logo, stripeB (bawah), stripeA (atas).
+// Tiap bagian model diberi peran dari namanya, lalu warnanya diambil dari peran itu (fromRoles).
+const ROLE_RE=[['sole',/sole|alas|outsole|midsole|insole|footbed/i],['upper',/upper|tali|strap|band|selop/i],['logo',/logo/i],['stripe',/stripe|garis|list/i]];
+let MODELS=[], M=null;
+const STATE={};            // per model: {data, custom, seq}
+let DATA=[], customRows=[];
+let drag=null, sel=null, saved=[], compare=[], pairMode=false;
+let locks={};
+
+function prepModel(m){
+  m.parts.forEach(p=>{p.role='other';for(const[r,re]of ROLE_RE)if(re.test(p.label)){p.role=r;break}});
+  // nama bagian tak dikenali: bagian pertama dianggap sole, berikutnya upper
+  if(!m.parts.some(p=>p.role==='sole')){const p=m.parts.find(p=>p.role==='other');if(p)p.role='sole'}
+  if(!m.parts.some(p=>p.role==='upper')){const p=m.parts.find(p=>p.role==='other');if(p)p.role='upper'}
+  // logo dibaca terhadap bagian (bukan stripe/logo) tepat di bawahnya: Men Stripe → upper, Slide → woven
+  m.parts.forEach((p,i)=>{if(p.role!=='logo')return;
+    for(let j=i-1;j>=0;j--)if(m.parts[j].role!=='stripe'&&m.parts[j].role!=='logo'){p.base=m.parts[j].key;p.baseLabel=m.parts[j].label;break}});
+  m.name=m.gender+' '+m.series;
+  return m;
+}
+const modelById=id=>MODELS.find(m=>m.id===id);
+const PK=(m,role)=>m.parts.filter(p=>p.role===role).map(p=>p.key);
+const shortLbl=l=>l.toUpperCase().replace(/STRIPE BAWAH/,'STRIPE ↓').replace(/STRIPE ATAS/,'STRIPE ↑');
+
+function fromRoles(rc,m=M){
+  const o={},st=[rc.stripeB,rc.stripeA],ot=[rc.stripeA,rc.logo,rc.stripeB];let si=0,oi=0;
+  m.parts.forEach(p=>{o[p.key]=p.role==='sole'?rc.sole:p.role==='upper'?rc.upper:p.role==='logo'?rc.logo:p.role==='stripe'?st[(si++)%2]:ot[(oi++)%3]});
+  // logo di atas bagian "lain" (mis. woven) dijaga tetap terbaca
+  m.parts.forEach(p=>{if(p.role!=='logo'||!p.base||m.parts.find(q=>q.key===p.base).role!=='other'||ratio(o[p.key],o[p.base])>=2.2)return;
+    const b=o[p.base];o[p.key]=ratio(rc.upper,b)>=2.2?rc.upper:Lof(b)>.45?'#161616':'#f7f4ee'});
+  return o;
+}
+function toRoles(c,m=M){
+  const g=r=>PK(m,r).map(k=>c[k]),all=m.parts.map(p=>c[p.key]),s=g('stripe');
+  const sole=g('sole')[0]||all[0],upper=g('upper')[0]||all[1]||sole,logo=g('logo')[0]||g('other')[0]||upper;
+  return {sole,upper,logo,stripeB:s[0]||logo,stripeA:s[1]||s[0]||logo};
+}
+function presetFor(m){
+  return PRESET.map(t=>({theme:t.theme,code:t.code,accent:t.accent,desc:t.desc,
+    subs:t.subs.map(s=>({name:s.name,code:s.code,combos:s.combos.map(c=>fromRoles(c,m))}))}));
+}
+
+function sandalHTML(c,m=M){
+  const one='<div class="sandal" style="padding-top:'+(m.h/m.w*100).toFixed(3)+'%">'+m.parts.map(p=>
+    '<div class="ly '+(p.flat?'flat':'')+'" style="--c:'+c[p.key]+';--img:url(\''+p.src+'\')"></div>').join('')+'</div>';
+  return '<div class="pairwrap '+(pairMode?'':'single')+'"><div class="mirror">'+one+'</div><div>'+one+'</div></div>';
+}
+
+const hex2rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const rgb2hex=r=>'#'+r.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+function rgb2hsl(h){let[r,g,b]=hex2rgb(h).map(v=>v/255);const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let hh=0,s=0;const l=(mx+mn)/2,d=mx-mn;
+  if(d){s=l>.5?d/(2-mx-mn):d/(mx+mn);hh=mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4);hh/=6}return[hh*360,s,l]}
+function hsl2hex(h,s,l){h=((h%360)+360)%360/360;s=Math.max(0,Math.min(1,s));l=Math.max(0,Math.min(1,l));
+  const f=(p,q,t)=>{if(t<0)t++;if(t>1)t--;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p};
+  let r,g,b;if(!s){r=g=b=l}else{const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;r=f(p,q,h+1/3);g=f(p,q,h);b=f(p,q,h-1/3)}return rgb2hex([r*255,g*255,b*255])}
+const lum=h=>{const c=hex2rgb(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+const ratio=(a,b)=>{const l1=lum(a),l2=lum(b);return (Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05)};
+const Lof=h=>rgb2hsl(h)[2];
+const Sof=h=>rgb2hsl(h)[1];
+const Hof=h=>rgb2hsl(h)[0];
+function hueDiff(a,b){let d=Math.abs(Hof(a)-Hof(b))%360;return d>180?360-d:d}
+
+/* ============ COLOR SCORING ENGINE ============ */
+// Menilai kombinasi warna sebuah model -> {score 0..100, sub:{harmony,readability,balance}, notes:[...]}
+function scoreCombo(c,m=M){
+  const hexes=m.parts.map(p=>c[p.key]);
+  const R=r=>PK(m,r).map(k=>c[k]);
+  const notes=[];
+
+  // --- 1) HARMONI (0..100) ---
+  // Kelompokkan warna jadi "hue keluarga". Netral (saturasi rendah) tidak dihitung tabrakan.
+  const chromatic=hexes.filter(h=>Sof(h)>0.16);
+  let harmony=100;
+  if(chromatic.length>=2){
+    // hitung sebaran hue antar warna berwarna
+    let maxSpread=0, pairBad=0, pairs=0;
+    for(let i=0;i<chromatic.length;i++)for(let j=i+1;j<chromatic.length;j++){
+      const d=hueDiff(chromatic[i],chromatic[j]);pairs++;
+      maxSpread=Math.max(maxSpread,d);
+      // zona tabrakan: 40..80 & 100..150 (bukan analog, bukan komplementer bersih)
+      if((d>38&&d<82)||(d>100&&d<150)) pairBad++;
+    }
+    const badRatio=pairs?pairBad/pairs:0;
+    harmony=Math.round(100 - badRatio*55);
+    if(maxSpread<=42) {harmony=Math.max(harmony,88); } // analog rapat = aman
+    else if(maxSpread>=150&&maxSpread<=180&&chromatic.length<=3){harmony=Math.max(harmony,84);} // komplementer
+    if(badRatio>0.34) notes.push('Beberapa warna hue-nya tabrakan');
+  } else {
+    harmony=94; // 0-1 warna kromatik (dominan netral) = aman
+  }
+  // penalti kalau terlalu banyak warna sangat jenuh sekaligus (norak)
+  const loud=hexes.filter(h=>Sof(h)>0.6&&Lof(h)>0.3&&Lof(h)<0.7).length;
+  if(loud>=3){harmony-=14;notes.push('Terlalu banyak warna ngejreng bersamaan');}
+
+  // --- 2) KETERBACAAN (0..100) ---
+  // logo vs upper (bobot 50%), tiap stripe vs sole (bobot 50% dibagi rata); bagian yang tak ada dilewati
+  const sole=R('sole')[0], upper=R('upper')[0], stripes=R('stripe');
+  const logos=m.parts.filter(p=>p.role==='logo'&&p.base).map(p=>[c[p.key],c[p.base],p.baseLabel]);
+  const mapR=(r,good,ok)=> r>=good?100 : r>=ok? 60+40*(r-ok)/(good-ok) : Math.max(0,60*(r-1)/(ok-1));
+  const prs=[];
+  logos.forEach(l=>prs.push([ratio(l[0],l[1]),4.5,2.2,.5/logos.length]));
+  if(sole)stripes.forEach(s=>prs.push([ratio(s,sole),2.2,1.35,.5/stripes.length]));
+  if(!prs.length&&upper&&sole)prs.push([ratio(upper,sole),1.6,1.15,1]);
+  const wsum=prs.reduce((a,p)=>a+p[3],0);
+  const rd=prs.length?Math.round(prs.reduce((a,p)=>a+p[3]*mapR(p[0],p[1],p[2]),0)/wsum):100;
+  logos.filter(l=>ratio(l[0],l[1])<2.2).forEach(l=>notes.push('Logo kurang kontras dengan '+l[2]));
+  if(sole&&stripes.length&&Math.min(...stripes.map(s=>ratio(s,sole)))<1.3) notes.push('Stripe hampir menyatu dengan sole');
+
+  // --- 3) KESEIMBANGAN VALUE (0..100) ---
+  const Ls=hexes.map(Lof);const spread=Math.max(...Ls)-Math.min(...Ls);
+  let balance=Math.round(Math.min(100, spread*135));   // butuh rentang terang-gelap
+  if(spread<0.18){balance=Math.round(spread*135);notes.push('Semua warna nyaris sama gelap/terang (datar)');}
+  // dua stripe idealnya beda dikit atau sama sengaja; kalau beda ekstrem beri sedikit penalti
+  if(stripes.length>=2&&hueDiff(stripes[1],stripes[0])>60 && Sof(stripes[1])>0.2 && Sof(stripes[0])>0.2){balance-=8;notes.push('Dua stripe warnanya jauh beda');}
+  balance=Math.max(0,Math.min(100,balance));
+
+  const score=Math.max(0,Math.min(100, Math.round(0.4*harmony+0.4*rd+0.2*balance)));
+  return {score, sub:{harmony:Math.max(0,Math.min(100,harmony)), readability:rd, balance}, notes};
+}
+function scoreTier(s){return s>=82?['A','#2e8c56']:s>=68?['B','#7a9c1e']:s>=52?['C','#c79a1e']:['D','#c23c32']}
+
+// Perbaiki kombinasi supaya skornya naik, tanpa mengubah part yang dikunci
+function autoFix(c,m=M){
+  const out=Object.assign({},c);
+  const soleK=PK(m,'sole')[0];
+  // 1) logo terbaca thd bagian di bawahnya (upper)
+  m.parts.filter(p=>p.role==='logo'&&p.base).forEach(p=>{const k=p.key,baseK=p.base;
+    if(!locks[k] && ratio(out[k],out[baseK])<3.2){
+      out[k] = Lof(out[baseK])>0.5 ? hsl2hex(Hof(out[baseK]),Math.min(0.5,Sof(out[baseK])),0.12)
+                                   : hsl2hex(Hof(out[baseK]),0.06,0.96);
+    }});
+  // 2) stripe kontras thd sole; warnakan selaras hue sole (stripe ke-1 = bawah, ke-2 = atas)
+  if(soleK){
+    const hS=Hof(out[soleK]), soleLight=Lof(out[soleK])>0.5, sS=Sof(out[soleK]);
+    PK(m,'stripe').forEach((k,i)=>{
+      if(locks[k])return;
+      if(i%2===1){ if(ratio(out[k],out[soleK])<1.9) out[k] = soleLight ? hsl2hex(hS, Math.max(0.25,sS*1.1), 0.22) : hsl2hex(hS, 0.12, 0.93); }
+      else       { if(ratio(out[k],out[soleK])<1.7) out[k] = soleLight ? hsl2hex(hS, Math.max(0.2,sS), 0.34)    : hsl2hex(hS, 0.16, 0.82); }
+    });
+  }
+  // 3) redam salah satu warna kalau terlalu banyak yang ngejreng
+  const parts=m.parts.filter(p=>p.role!=='sole'&&p.role!=='logo').map(p=>p.key);
+  const loud=parts.filter(k=>Sof(out[k])>0.6&&Lof(out[k])>0.3&&Lof(out[k])<0.7);
+  if(loud.length>=3){const k=loud[0];if(!locks[k])out[k]=hsl2hex(Hof(out[k]),0.28,Lof(out[k]));}
+  // 4) pastikan ada terang & gelap (balance)
+  const Ls=m.parts.map(p=>Lof(out[p.key]));
+  if(soleK && Math.max(...Ls)-Math.min(...Ls)<0.2 && !locks[soleK]){
+    const s=out[soleK];
+    out[soleK] = Lof(s)>0.5 ? hsl2hex(Hof(s),Sof(s),Math.max(0.14,Lof(s)-0.3))
+                            : hsl2hex(Hof(s),Sof(s),Math.min(0.9,Lof(s)+0.3));
+  }
+  return out;
+}
+
+function tokenize(s){return s.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(Boolean)}
+function pickPalette(keyword){
+  const toks=tokenize(keyword);const recipeHits=[];
+  toks.forEach(t=>{if(RECIPES[t])recipeHits.push(...RECIPES[t])});
+  if(!recipeHits.length)Object.keys(RECIPES).forEach(k=>{if(toks.some(t=>k.includes(t)||t.includes(k)))recipeHits.push(...RECIPES[k])});
+  let names=recipeHits.length?[...new Set(recipeHits)]:[];
+  const scored=COLORS.map(c=>{let sc=0;toks.forEach(t=>{if(c.name.toLowerCase().includes(t))sc+=3;if(c.tags.includes(t))sc+=2;else if(c.tags.some(tag=>tag.includes(t)||t.includes(tag)))sc+=1});if(names.includes(c.name))sc+=4;return{c,sc}}).sort((a,b)=>b.sc-a.sc);
+  let pool=scored.filter(x=>x.sc>0).map(x=>x.c);
+  if(pool.length<5){const extra=COLORS.filter(c=>!pool.includes(c));while(pool.length<8&&extra.length)pool.push(extra.splice(Math.floor(Math.random()*extra.length),1)[0])}
+  if(!pool.some(c=>Lof(c.hex)>.7)){const l=COLORS.find(c=>Lof(c.hex)>.85);if(l)pool.push(l)}
+  if(!pool.some(c=>Lof(c.hex)<.3)){const d=COLORS.find(c=>Lof(c.hex)<.2);if(d)pool.push(d)}
+  return pool.slice(0,10);
+}
+function buildCombos(pool){
+  const darks=pool.filter(c=>Lof(c.hex)<.4),lights=pool.filter(c=>Lof(c.hex)>.65),mids=pool.filter(c=>Lof(c.hex)>=.4&&Lof(c.hex)<=.65);
+  const sat=[...pool].sort((a,b)=>rgb2hsl(b.hex)[1]-rgb2hsl(a.hex)[1]);
+  const pk=arr=>arr.length?arr[Math.floor(Math.random()*arr.length)].hex:pool[Math.floor(Math.random()*pool.length)].hex;
+  const dk=()=>darks.length?pk(darks):'#1a1a1a',lt=()=>lights.length?pk(lights):'#f5f2ea',md=()=>mids.length?pk(mids):pk(pool);
+  const accent=(sat[0]&&rgb2hsl(sat[0].hex)[1]>.35)?sat[0].hex:pk(pool);
+  const patterns=[
+    ()=>({sole:lt(),upper:dk(),logo:lt()}),
+    ()=>({sole:dk(),upper:lt(),logo:dk()}),
+    ()=>({sole:md()||lt(),upper:accent,logo:Lof(accent)>.5?dk():lt()}),
+    ()=>({sole:lt(),upper:md()||dk(),logo:dk()}),
+    ()=>({sole:lt(),upper:accent,logo:Lof(accent)>.5?dk():lt()}),
+    ()=>({sole:dk(),upper:md()||accent,logo:lt()}),
+  ];
+  const out=[];
+  for(let i=0;i<6;i++){
+    let c=patterns[i]();
+    if(ratio(c.logo,c.upper)<2.2)c.logo=Lof(c.upper)>.45?'#161616':'#f7f4ee';
+    if(c.upper===c.sole)c.sole=Lof(c.upper)>.5?dk():lt();
+    // stripe kontras dgn sole
+    const trio=[c.logo,c.upper,c.sole].sort((a,b)=>Lof(a)-Lof(b));
+    if(Lof(c.sole)>.5){c.stripeA=accent&&ratio(accent,c.sole)>1.5?accent:trio[0];c.stripeB=ratio(c.logo,c.sole)>1.5?c.logo:trio[0];}
+    else{c.stripeA=trio[trio.length-1];c.stripeB=ratio(c.logo,c.sole)>1.5?c.logo:trio[trio.length-1];}
+    if(ratio(c.stripeA,c.sole)<1.25)c.stripeA=Lof(c.sole)>.5?'#1a1a1a':'#f5f2ea';
+    if(ratio(c.stripeB,c.sole)<1.25)c.stripeB=Lof(c.sole)>.5?'#333':'#efe7d8';
+    out.push(c);
+  }
+  return out;
+}
+
+function generateCustom(keyword){const kw=(keyword||'').trim();if(!kw||!M)return;
+  const st=STATE[M.id];const pal=pickPalette(kw);st.seq++;
+  customRows.unshift({code:'CU'+String(st.seq).padStart(2,'0'),label:kw.replace(/\b\w/g,ch=>ch.toUpperCase()),combos:buildCombos(pal).map(c=>fromRoles(c)),matched:pal.map(c=>c.name)});
+  renderCustom();
+}
+function renderCustom(){
+  const host=document.getElementById('customThemes');host.innerHTML='';
+  if(customRows.length){const h=document.createElement('div');h.className='thead';
+    h.innerHTML='<div class="tsw" style="background:#c2673f"></div><div><div class="tname">Custom Themes</div><div class="tdesc">Dibuat dari keyword-mu — editable, drag, simpan.</div></div>';host.appendChild(h)}
+  customRows.forEach((cr,idx)=>{
+    const row=document.createElement('div');row.className='row custom-row';row.dataset.s=('custom '+cr.label+' '+cr.code).toLowerCase();
+    row.innerHTML='<div class="rhead"><span class="rt">✨ '+cr.label+'</span><span class="rc">'+cr.code+'</span>'
+      +'<span class="rtools"><button data-a="best">💡 Rapikan</button><button data-a="regen">🎲 Generate ulang</button><button data-a="del">🗑 Hapus</button></span></div>'
+      +'<div class="tdesc" style="margin:-4px 0 9px;font-size:10.5px">Palet: '+cr.matched.slice(0,7).join(' · ')+'</div>';
+    const g=document.createElement('div');g.className='cards';g.style.gridTemplateColumns='repeat('+(+zoom.value)+',1fr)';
+    cr.combos.forEach((c,ci)=>g.appendChild(makeCard({code:cr.code,theme:'Custom'},{code:cr.label,name:cr.label},c,ci)));
+    row.appendChild(g);
+    row.querySelector('[data-a="best"]').onclick=()=>{cr.combos=cr.combos.map(c=>autoFix(c));renderCustom()};
+    row.querySelector('[data-a="regen"]').onclick=()=>{cr.combos=buildCombos(pickPalette(cr.label)).map(c=>fromRoles(c));renderCustom()};
+    row.querySelector('[data-a="del"]').onclick=()=>{customRows.splice(idx,1);renderCustom()};
+    host.appendChild(row);
+  });
+  applyFilter();
+}
+
+const themesEl=document.getElementById('themes');
+const zoom=document.getElementById('zoom');
+function build(){
+  themesEl.innerHTML='';
+  const fresh=presetFor(M);
+  DATA.forEach((t,ti)=>{
+    const b=document.createElement('div');b.className='tblock';
+    b.innerHTML='<div class="thead"><div class="tsw" style="background:'+t.accent+'"></div><div><div class="tname">'+t.theme+'</div><div class="tdesc">'+t.desc+'</div></div></div>';
+    t.subs.forEach((s,si)=>{
+      const row=document.createElement('div');row.className='row';row.dataset.s=(t.theme+' '+s.name+' '+t.code+' '+s.code).toLowerCase();
+      row.innerHTML='<div class="rhead"><span class="rt">'+s.name+'</span><span class="rc">'+t.code+'-'+s.code+'</span>'
+        +'<span class="rtools"><button data-a="best">💡 Isi kombinasi bagus</button><button data-a="dice">🎲 Acak row</button><button data-a="reset">↺</button></span></div>';
+      const g=document.createElement('div');g.className='cards';g.style.gridTemplateColumns='repeat('+(+zoom.value)+',1fr)';
+      s.combos.forEach((c,ci)=>g.appendChild(makeCard(t,s,c,ci)));
+      row.appendChild(g);
+      row.querySelector('[data-a="best"]').onclick=()=>{s.combos.forEach(c=>Object.assign(c,suggestBest(t)));rerenderRow(g,t,s)};
+      row.querySelector('[data-a="dice"]').onclick=()=>{s.combos.forEach(c=>Object.assign(c,fromRoles(randomFrom(t))));rerenderRow(g,t,s)};
+      row.querySelector('[data-a="reset"]').onclick=()=>{s.combos.forEach((c,i)=>Object.assign(c,fresh[ti].subs[si].combos[i]));rerenderRow(g,t,s)};
+      b.appendChild(row);
+    });
+    themesEl.appendChild(b);
+  });
+  applyFilter();
+}
+function rerenderRow(g,t,s){g.innerHTML='';s.combos.forEach((c,ci)=>g.appendChild(makeCard(t,s,c,ci)))}
+
+function makeCard(t,s,c,ci){
+  const id=t.code+'-'+(s.code||'').replace(/\s+/g,'').slice(0,6).toUpperCase()+'-'+String(ci+1).padStart(2,'0');
+  const card=document.createElement('div');card.className='card';card.draggable=true;
+  const scoreBadge=sc=>{const t=scoreTier(sc.score);return '<span class="scb" title="Harmoni '+sc.sub.harmony+' · Terbaca '+sc.sub.readability+' · Balance '+sc.sub.balance+'" style="background:'+t[1]+'">'+t[0]+' '+sc.score+'</span>'};
+  card.innerHTML='<div class="cid">'+id+'<span class="pin" title="Compare">⇄</span></div>'
+    +'<div class="slot">'+sandalHTML(c)+'</div>'
+    +'<div class="scbwrap">'+scoreBadge(scoreCombo(c))+'</div>'
+    +'<div class="cbtn"><button>→ SKU</button></div>'
+    +'<div class="picks" style="grid-template-columns:repeat('+M.parts.length+',1fr)">'+M.parts.map(p=>'<div class="pk"><input type="color" value="'+c[p.key]+'" data-k="'+p.key+'"><label>'+shortLbl(p.label)+'</label></div>').join('')+'</div>';
+  const slot=card.querySelector('.slot');
+  const scw=card.querySelector('.scbwrap');
+  const refreshScore=()=>{scw.innerHTML=scoreBadge(scoreCombo(c))};
+  card.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input',e=>{c[e.target.dataset.k]=e.target.value;slot.innerHTML=sandalHTML(c);refreshScore()});
+    inp.addEventListener('mousedown',()=>card.draggable=false);
+    inp.addEventListener('change',()=>card.draggable=true);
+    inp.addEventListener('blur',()=>card.draggable=true);
+  });
+  const pack=()=>({id:id,model:M.id,theme:t.theme,sub:s.name,col:Object.assign({},c)});
+  card.addEventListener('dragstart',e=>{drag=pack();card.classList.add('dragging');e.dataTransfer.effectAllowed='copy'});
+  card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  card.querySelector('.cbtn button').onclick=e=>{e.stopPropagation();sel=pack();paint();window.scrollTo({top:0,behavior:'smooth'})};
+  card.querySelector('.pin').onclick=e=>{e.stopPropagation();addCompare(pack())};
+  card.addEventListener('dblclick',()=>{sel=pack();paint()});
+  return card;
+}
+// 1 kombinasi acak (dalam bentuk peran) dari warna preset tema t
+function randomFrom(t){
+  const pool=[];PRESET.forEach(x=>{if(x.theme===t.theme)x.subs.forEach(s=>s.combos.forEach(c=>pool.push(c.sole,c.upper,c.logo,c.stripeB,c.stripeA)))});
+  if(!pool.length)COLORS.forEach(c=>pool.push(c.hex));
+  const p=()=>pool[Math.floor(Math.random()*pool.length)];
+  let sole=p(),upper=p(),logo=p();
+  if(ratio(logo,upper)<1.8)logo=Lof(upper)>.4?'#141414':'#f7f5f0';
+  let sb=p(),sa=p();
+  if(ratio(sa,sole)<1.3)sa=Lof(sole)>.5?'#1a1a1a':'#f2ead9';
+  if(ratio(sb,sole)<1.3)sb=Lof(sole)>.5?'#333':'#efe7d8';
+  return {sole,upper,logo,stripeB:sb,stripeA:sa};
+}
+// hasilkan 1 kombinasi bagus (skor tinggi) dari palet tema t
+function suggestBest(t){
+  let best=null,bestS=-1;
+  for(let i=0;i<90;i++){
+    const cand=autoFix(fromRoles(randomFrom(t)));
+    const s=scoreCombo(cand).score;
+    if(s>bestS){bestS=s;best=cand}
+    if(bestS>=90)break;
+  }
+  return best;
+}
+
+const dz=document.getElementById('dz'),hint=document.getElementById('hint'),view=document.getElementById('view');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');if(!drag)return;sel=JSON.parse(JSON.stringify(drag));paint()});
+
+function paint(){
+  const m=modelById(sel.model),c=sel.col;
+  hint.style.display='none';view.classList.add('on');
+  document.getElementById('bigSandal').innerHTML=sandalHTML(c,m);
+  document.getElementById('skuCode').textContent=m.code+'-'+sel.id;
+  document.getElementById('skuName').textContent=m.name+' › '+sel.theme+' › '+sel.sub;
+  document.getElementById('skuHex').innerHTML=m.parts.map(p=>'<span class="chip" data-h="'+c[p.key]+'" title="Klik copy"><span class="dot" style="background:'+c[p.key]+'"></span>'+shortLbl(p.label)+' '+c[p.key].toUpperCase()+'</span>').join('');
+  document.querySelectorAll('#skuHex .chip').forEach(x=>x.onclick=()=>{if(navigator.clipboard)navigator.clipboard.writeText(x.dataset.h);x.style.borderColor='#c2673f';setTimeout(()=>{x.style.borderColor=''},700)});
+  const lp=m.parts.find(p=>p.role==='logo'&&p.base);
+  if(lp){
+    const r=ratio(c[lp.key],c[lp.base]);const cls=r>=4.5?'bg-ok':r>=2.2?'bg-mid':'bg-bad';
+    const txt=r>=4.5?'logo sangat terbaca':r>=2.2?'logo cukup terbaca':'logo nyaris tenggelam';
+    document.getElementById('contrast').innerHTML='<span class="badge '+cls+'">◐ Logo/'+lp.baseLabel+' '+r.toFixed(1)+':1 — '+txt+'</span>';
+  } else document.getElementById('contrast').innerHTML='';
+  // SCORE PANEL
+  const sc=scoreCombo(c,m);const tier=scoreTier(sc.score);
+  const barRow=(lb,v)=>{const col=v>=75?'#2e8c56':v>=55?'#c79a1e':'#c23c32';return '<div class="bar"><span style="width:52px">'+lb+'</span><span class="track"><span class="fill" style="width:'+v+'%;background:'+col+'"></span></span><span style="width:22px;text-align:right">'+v+'</span></div>'};
+  document.getElementById('scorepanel').innerHTML=
+    '<div class="scorebig"><span class="num" style="color:'+tier[1]+'">'+sc.score+'</span>'
+    +'<span class="tier" style="background:'+tier[1]+'">Grade '+tier[0]+'</span></div>'
+    +'<div class="bars">'+barRow('Harmoni',sc.sub.harmony)+barRow('Terbaca',sc.sub.readability)+barRow('Balance',sc.sub.balance)+'</div>'
+    +'<div class="snotes">'+(sc.notes.length?sc.notes.map(n=>'<span class="n">• '+n+'</span>').join(''):'<span class="n" style="color:#2e8c56">✓ Kombinasi sudah oke</span>')+'</div>';
+  document.getElementById('editcol').innerHTML=m.parts.map(p=>'<div class="ec"><span class="k">'+shortLbl(p.label)+'</span><input type="color" value="'+c[p.key]+'" data-k="'+p.key+'"><span class="lock '+(locks[p.key]?'on':'')+'" data-l="'+p.key+'">'+(locks[p.key]?'🔒':'🔓')+'</span></div>').join('');
+  document.querySelectorAll('#editcol input').forEach(i=>i.oninput=e=>{c[e.target.dataset.k]=e.target.value;paint()});
+  document.querySelectorAll('#editcol .lock').forEach(l=>l.onclick=()=>{locks[l.dataset.l]=!locks[l.dataset.l];paint()});
+}
+function clearSel(){sel=null;view.classList.remove('on');hint.style.display='block'}
+const themeOf=s=>DATA.find(x=>x.theme===s.theme)||DATA[0];
+document.getElementById('clear').onclick=clearSel;
+document.getElementById('save').onclick=()=>{if(!sel)return;const m=modelById(sel.model);saved.push(Object.assign(JSON.parse(JSON.stringify(sel)),{sku:m.code+'-'+sel.id}));renderSaved()};
+document.getElementById('dice').onclick=()=>{if(!sel)return;const r=fromRoles(randomFrom(themeOf(sel)));M.parts.forEach(p=>{if(!locks[p.key])sel.col[p.key]=r[p.key]});paint()};
+document.getElementById('harmony').onclick=()=>{if(!sel)return;const rc=toRoles(sel.col),hsl=rgb2hsl(rc.sole),h=hsl[0],s=hsl[1],l=hsl[2];
+  rc.upper=hsl2hex(h+(Math.random()<.5?16:-16),s*1.3+.06,l>.5?l-0.32:l+0.26);
+  rc.logo=l>.55?hsl2hex(h,s*1.1,.13):hsl2hex(h,.08,.95);
+  rc.stripeA=l>.55?hsl2hex(h,s*1.2,.2):hsl2hex(h,.1,.92);
+  rc.stripeB=l>.55?hsl2hex(h,s*0.9,.32):hsl2hex(h,.14,.8);
+  const nc=fromRoles(rc);M.parts.forEach(p=>{if(p.role!=='sole'&&!locks[p.key])sel.col[p.key]=nc[p.key]});
+  paint()};
+document.getElementById('toCmp').onclick=()=>{if(sel)addCompare(sel)};
+document.getElementById('autofix').onclick=()=>{if(!sel)return;const fixed=autoFix(sel.col);M.parts.forEach(p=>{if(!locks[p.key])sel.col[p.key]=fixed[p.key]});paint()};
+document.getElementById('suggest').onclick=()=>{
+  if(!sel)return;
+  // generate banyak kandidat dari palet tema sel, skor, ambil terbaik (hormati lock)
+  const t=themeOf(sel);
+  let best=null,bestS=-1;
+  for(let i=0;i<160;i++){
+    const cand=Object.assign({},sel.col,fromRoles(randomFrom(t)));
+    M.parts.forEach(p=>{if(locks[p.key])cand[p.key]=sel.col[p.key]});
+    const fixed=autoFix(cand);M.parts.forEach(p=>{if(locks[p.key])fixed[p.key]=sel.col[p.key]});
+    const s=scoreCombo(fixed).score;
+    if(s>bestS){bestS=s;best=fixed}
+  }
+  if(best){Object.assign(sel.col,best);paint()}
+};
+
+function addCompare(c){if(compare.length>=5)compare.shift();compare.push(JSON.parse(JSON.stringify(c)));renderCompare()}
+function renderCompare(){const tray=document.getElementById('tray'),ts=document.getElementById('tslots');
+  tray.classList.toggle('on',compare.length>0);
+  ts.innerHTML=compare.map((c,i)=>{const m=modelById(c.model);return '<div class="tslot"><span class="x" data-i="'+i+'">✕</span><div class="lb">'+m.code+'-'+c.id+'</div>'+sandalHTML(c.col,m)+'</div>'}).join('');
+  ts.querySelectorAll('.x').forEach(x=>x.onclick=()=>{compare.splice(+x.dataset.i,1);renderCompare()})}
+document.getElementById('cmpClear').onclick=()=>{compare=[];renderCompare()};
+
+function renderSaved(){const g=document.getElementById('sgrid');document.getElementById('cnt').textContent=saved.length+' SKU';
+  if(!saved.length){g.innerHTML='<span class="empty">Belum ada SKU tersimpan.</span>';return}
+  g.innerHTML=saved.map((s,i)=>{const m=modelById(s.model);return '<div class="sv"><span class="rm" data-i="'+i+'">✕</span><div class="sd">'+sandalHTML(s.col,m)+'</div>'
+    +'<div><div class="svc">'+s.sku+'</div><div class="svm">'+m.name+'</div><div class="svn">'+s.sub+'</div><div class="mh">'
+    +m.parts.map(p=>'<span class="md" title="'+p.label+'" style="background:'+s.col[p.key]+'"></span>').join('')+'</div></div></div>'}).join('');
+  g.querySelectorAll('.rm').forEach(x=>x.onclick=()=>{saved.splice(+x.dataset.i,1);renderSaved()})}
+const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()};
+const csvq=v=>/[",\n]/.test(v)?'"'+String(v).replace(/"/g,'""')+'"':v;
+document.getElementById('csv').onclick=()=>{if(!saved.length){alert('Belum ada SKU tersimpan.');return}
+  const n=Math.max(...saved.map(s=>modelById(s.model).parts.length));
+  const head=['SKU','Gender','Series','Tema','Sub Tema'];for(let i=1;i<=n;i++)head.push('Bagian '+i);
+  const csv=head.join(',')+'\n'+saved.map(s=>{const m=modelById(s.model);
+    return [s.sku,m.gender,m.series,s.theme,s.sub,...m.parts.map(p=>p.label+' '+s.col[p.key].toUpperCase())].map(csvq).join(',')}).join('\n');
+  dl(new Blob([csv],{type:'text/csv'}),'sandal-sku.csv')};
+document.getElementById('jsonx').onclick=()=>{if(!saved.length){alert('Belum ada SKU tersimpan.');return}dl(new Blob([JSON.stringify(saved,null,2)],{type:'application/json'}),'sandal-sku.json')};
+document.getElementById('imp').onclick=()=>document.getElementById('impf').click();
+// JSON lama (web Men Stripe versi 1 file) tidak punya "model"/"col": diubah ke model men-stripe
+const fromOld=s=>s.col?s:{id:s.id,model:'men-stripe',theme:s.theme,sub:s.sub,sku:s.sku,col:{sole:s.sole,upper:s.upper,logo:s.logo,'stripe-bawah':s.stripeB,'stripe-atas':s.stripeA}};
+document.getElementById('impf').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const j=JSON.parse(rd.result);if(Array.isArray(j)){
+    const all=j.map(fromOld),ok=all.filter(s=>{const m=modelById(s.model);return m&&m.parts.every(p=>s.col[p.key])});
+    if(ok.length<all.length)alert((all.length-ok.length)+' SKU dilewati karena modelnya tidak ada / bagiannya berubah.');
+    saved=ok;renderSaved()}}catch(_){alert('JSON tidak valid.')}};rd.readAsText(f);e.target.value=''};
+
+const imgCache={};
+function loadImg(src){if(!imgCache[src])imgCache[src]=new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src});return imgCache[src]}
+async function renderPNG(c,m,W,bg){
+  const arr=await Promise.all(m.parts.map(p=>loadImg(p.src)));
+  const H=Math.round(W*m.h/m.w);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  x.fillStyle=bg;x.fillRect(0,0,W,H);
+  const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;const t=tmp.getContext('2d');
+  m.parts.forEach((p,idx)=>{const im=arr[idx],col=c[p.key];
+    t.globalCompositeOperation='source-over';t.clearRect(0,0,W,H);t.drawImage(im,0,0,W,H);
+    t.globalCompositeOperation='multiply';t.fillStyle=col;t.fillRect(0,0,W,H);
+    t.globalCompositeOperation='destination-in';t.drawImage(im,0,0,W,H);
+    t.globalCompositeOperation='source-over';x.drawImage(tmp,0,0)});
+  return cv}
+document.getElementById('png').onclick=async()=>{if(!sel)return;const m=modelById(sel.model);const cv=await renderPNG(sel.col,m,1500,document.body.classList.contains('dark')?'#17181a':'#ffffff');cv.toBlob(b=>dl(b,m.code+'-'+sel.id+'.png'))};
+document.getElementById('sheet').onclick=async()=>{if(!saved.length){alert('Belum ada SKU tersimpan.');return}
+  const CW=640,IH=Math.max(...saved.map(s=>{const m=modelById(s.model);return Math.round(CW*m.h/m.w)})),CH=IH+58;
+  const cols=Math.min(3,saved.length),rows=Math.ceil(saved.length/cols);
+  const out=document.createElement('canvas');out.width=cols*CW+40;out.height=rows*CH+40;
+  const o=out.getContext('2d');o.fillStyle='#ffffff';o.fillRect(0,0,out.width,out.height);
+  for(let i=0;i<saved.length;i++){const s=saved[i],m=modelById(s.model);const cv=await renderPNG(s.col,m,CW,'#ffffff');const cx=20+(i%cols)*CW,cy=20+Math.floor(i/cols)*CH;o.drawImage(cv,cx,cy+(IH-cv.height));
+    o.fillStyle='#1c1c1a';o.font='bold 18px monospace';o.fillText(s.sku,cx+12,cy+IH+24);
+    o.fillStyle='#8d8a83';o.font='14px sans-serif';o.fillText(m.name+' — '+s.theme+' — '+s.sub,cx+12,cy+IH+44);
+    m.parts.forEach((p,j)=>{const x0=cx+CW-24*m.parts.length-4+j*24;o.fillStyle=s.col[p.key];o.fillRect(x0,cy+IH+16,20,20);o.strokeStyle='rgba(0,0,0,.25)';o.strokeRect(x0,cy+IH+16,20,20)})}
+  out.toBlob(b=>dl(b,'sandal-contact-sheet.png'))};
+
+document.getElementById('bgseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#bgseg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.body.classList.toggle('dark',b.dataset.b==='dark');document.body.classList.toggle('kraft',b.dataset.b==='kraft')};
+document.getElementById('viewseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#viewseg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');pairMode=b.dataset.v==='pair';if(!M)return;build();renderCustom();if(sel)paint();renderSaved();renderCompare()};
+zoom.oninput=()=>document.querySelectorAll('.cards').forEach(g=>g.style.gridTemplateColumns='repeat('+(+zoom.value)+',1fr)');
+function applyFilter(){const q=document.getElementById('q').value.toLowerCase().trim();document.querySelectorAll('.row').forEach(r=>r.classList.toggle('hide',!!q&&!r.dataset.s.includes(q)));document.querySelectorAll('.tblock').forEach(b=>{const any=[].slice.call(b.querySelectorAll('.row')).some(r=>!r.classList.contains('hide'));b.classList.toggle('hide',!any)})}
+document.getElementById('q').oninput=applyFilter;
+document.getElementById('shuffleAll').onclick=()=>{if(!M)return;DATA.forEach(t=>t.subs.forEach(s=>s.combos.forEach(c=>Object.assign(c,fromRoles(randomFrom(t))))));build()};
+document.getElementById('resetAll').onclick=()=>{if(!M)return;STATE[M.id].data=DATA=presetFor(M);build()};
+
+const KWS=['senja tropis','kopi susu','hutan pagi','permen pastel','laut dalam','gurun senja','musim gugur','malam kota','sakura','citrus segar','vintage retro','mineral kalem'];
+document.getElementById('kwchips').innerHTML=KWS.map(k=>'<span class="kw">'+k+'</span>').join('');
+document.querySelectorAll('#kwchips .kw').forEach(x=>x.onclick=()=>{document.getElementById('ckw').value=x.textContent;generateCustom(x.textContent)});
+document.getElementById('cgen').onclick=()=>generateCustom(document.getElementById('ckw').value);
+document.getElementById('ckw').addEventListener('keydown',e=>{if(e.key==='Enter')generateCustom(e.target.value)});
+document.getElementById('csurprise').onclick=()=>{const k=KWS[Math.floor(Math.random()*KWS.length)];document.getElementById('ckw').value=k;generateCustom(k)};
+
+/* ============ PILIH MODEL (filter gender / series) ============ */
+function segHTML(items,on,attr){return items.map(v=>'<button data-'+attr+'="'+v+'"'+(v===on?' class="on"':'')+'>'+v+'</button>').join('')}
+function renderModelBar(){
+  const genders=[...new Set(MODELS.map(m=>m.gender))];
+  document.getElementById('gseg').innerHTML=segHTML(genders,M.gender,'g');
+  document.getElementById('sseg').innerHTML=segHTML(MODELS.filter(m=>m.gender===M.gender).map(m=>m.series),M.series,'s');
+  document.getElementById('mtitle').textContent='· '+M.name+' · '+M.parts.length+' komponen';
+  document.getElementById('msub').textContent='Komponen (bawah→atas): '+M.parts.map(p=>p.label).join(' · ')+'. Ketik tema custom, drag ke SKU, edit, export.';
+  document.getElementById('minfo').textContent=MODELS.length+' model';
+}
+async function selectModel(id){
+  const m=modelById(id)||MODELS[0];
+  themesEl.innerHTML='<div class="loading">Memuat foto '+m.name+' dari Google Drive…</div>';
+  try{await loadModelImages(m)}catch(e){themesEl.innerHTML='<div class="loading">Gagal memuat foto '+m.name+': '+e.message+'</div>';return}
+  if(M){STATE[M.id].data=DATA;STATE[M.id].custom=customRows}
+  M=m;
+  if(!STATE[m.id])STATE[m.id]={data:presetFor(m),custom:[],seq:0};
+  DATA=STATE[m.id].data;customRows=STATE[m.id].custom;
+  locks={};m.parts.forEach(p=>locks[p.key]=false);
+  if(sel&&sel.model!==m.id)clearSel();
+  try{history.replaceState(null,'','#'+m.id)}catch(_){}
+  renderModelBar();build();renderCustom();
+}
+document.getElementById('gseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  const same=MODELS.find(m=>m.gender===b.dataset.g&&m.series===M.series);selectModel((same||MODELS.find(m=>m.gender===b.dataset.g)).id)};
+document.getElementById('sseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  selectModel(MODELS.find(m=>m.gender===M.gender&&m.series===b.dataset.s).id)};
+
+/* ============ LOGIN GOOGLE + FOTO LANGSUNG DARI DRIVE ============ */
+// Yang bisa melihat sandal = akun yang punya akses ke folder Drive "Colorway Studio".
+// Susunan Drive: Colorway Studio / <Gender> / <Series> / "1 sole.png", "2 upper.png", ...
+const CLIENT_ID='ISI_CLIENT_ID.apps.googleusercontent.com';
+const ROOT_FOLDER='1zU13Col36dWQKbVNHCjIy6tmWwOe2qch';
+const FOLDER_MIME='application/vnd.google-apps.folder';
+const PART_RE=/^\s*(\d+)\s*[-_.]?\s*(.+?)\.png\s*$/i;
+const FLAT_RE=/stripe|garis|list/i;   // bagian tipis diwarnai polos (tanpa shading)
+const MAX_W=1000;                       // foto lebih lebar diperkecil supaya ringan
+let TOKEN=null, tokenClient=null, tokenWait=null;
+
+function requestToken(prompt){
+  return new Promise((res,rej)=>{tokenWait={res,rej};tokenClient.requestAccessToken({prompt})});
+}
+async function gapi(path,blob){
+  for(let i=0;i<2;i++){
+    const r=await fetch('https://www.googleapis.com/drive/v3/'+path,{headers:{Authorization:'Bearer '+TOKEN}});
+    if(r.status===401&&i===0&&tokenClient){await requestToken('');continue}   // token 1 jam habis → minta ulang
+    if(!r.ok)throw new Error('Drive '+r.status);
+    return blob?r.blob():r.json();
+  }
+}
+async function children(parent){
+  let out=[],tok='';
+  do{
+    const j=await gapi('files?q='+encodeURIComponent("'"+parent+"' in parents and trashed=false")
+      +'&fields=nextPageToken,files(id,name,mimeType)&pageSize=200&supportsAllDrives=true&includeItemsFromAllDrives=true'+(tok?'&pageToken='+tok:''));
+    out=out.concat(j.files);tok=j.nextPageToken||'';
+  }while(tok);
+  return out.sort((a,b)=>a.name.toLowerCase()<b.name.toLowerCase()?-1:1);
+}
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'x';
+
+// baca susunan folder (belum unduh foto)
+async function listModels(){
+  const models=[],warnings=[];
+  for(const g of (await children(ROOT_FOLDER)).filter(f=>f.mimeType===FOLDER_MIME))
+    for(const s of (await children(g.id)).filter(f=>f.mimeType===FOLDER_MIME)){
+      const where=g.name+' / '+s.name,parts=[],bad=[];
+      for(const f of await children(s.id)){
+        if(f.mimeType===FOLDER_MIME)continue;
+        const mm=f.name.match(PART_RE);
+        if(!mm){bad.push(f.name);continue}
+        parts.push({num:+mm[1],label:mm[2].trim(),fileId:f.id});
+      }
+      if(bad.length)warnings.push(where+': nama file tidak sesuai format "<nomor> <bagian>.png", dilewati: '+bad.join(', '));
+      if(!parts.length)continue;   // folder masih kosong
+      parts.sort((a,b)=>a.num-b.num);
+      const keys=new Set();
+      parts.forEach(p=>{let k=slug(p.label);while(keys.has(k))k+='-2';keys.add(k);p.key=k;p.flat=FLAT_RE.test(p.label)});
+      models.push({id:slug(g.name)+'-'+slug(s.name),gender:g.name.trim(),series:s.name.trim(),
+        code:s.name.trim().slice(0,3).toUpperCase()+'-'+g.name.trim().slice(0,1).toUpperCase(),parts,where});
+    }
+  return {models,warnings};
+}
+// unduh foto 1 model (sekali saja), cek ukurannya sama
+async function loadModelImages(m){
+  if(m.ready)return;
+  const imgs=await Promise.all(m.parts.map(async p=>{
+    const blob=await gapi('files/'+p.fileId+'?alt=media&supportsAllDrives=true',true);
+    const im=await createImageBitmap(blob);return {blob,im};
+  }));
+  const sizes=[...new Set(imgs.map(x=>x.im.width+'x'+x.im.height))];
+  if(sizes.length>1)throw new Error('ukuran foto tidak sama ('+m.parts.map((p,i)=>p.num+' '+p.label+' '+imgs[i].im.width+'x'+imgs[i].im.height).join(', ')+')');
+  let w=imgs[0].im.width,h=imgs[0].im.height;
+  const scale=w>MAX_W?MAX_W/w:1;
+  if(scale<1){w=MAX_W;h=Math.round(h*scale)}
+  await Promise.all(m.parts.map(async(p,i)=>{
+    let b=imgs[i].blob;
+    if(scale<1){const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(imgs[i].im,0,0,w,h);
+      b=await new Promise(r=>cv.toBlob(r,'image/png'))}
+    p.src=URL.createObjectURL(b);loadImg(p.src);
+  }));
+  m.w=w;m.h=h;m.ready=true;
+}
+function showWarnings(w){
+  const el=document.getElementById('warn');el.classList.toggle('hide',!w.length);
+  el.innerHTML='<b>⚠ Ada foto di Google Drive yang belum bisa dipakai:</b>'+w.map(x=>'• '+x.replace(/</g,'&lt;')).join('<br>');
+}
+async function start(){
+  document.getElementById('login').classList.add('hide');
+  themesEl.innerHTML='<div class="loading">Membaca folder Google Drive…</div>';
+  try{
+    const me=await gapi('about?fields=user(emailAddress)');
+    document.getElementById('who').textContent=me.user.emailAddress;
+    const {models,warnings}=await listModels();
+    MODELS=models.map(prepModel);
+    // model yang fotonya rusak tetap dicoba saat dipilih; pesan ukuran muncul di area kartu
+    showWarnings(warnings);
+    if(!MODELS.length){themesEl.innerHTML='<div class="loading">Belum ada model. Upload foto ke Google Drive "Colorway Studio".</div>';return}
+    await selectModel(decodeURIComponent(location.hash.slice(1)));
+  }catch(e){
+    themesEl.innerHTML='';
+    const msg=/Drive 40[34]/.test(e.message)
+      ?'Akun ini belum punya akses ke folder Google Drive "Colorway Studio". Minta akses ke Wafi, lalu login lagi.'
+      :'Gagal membaca Google Drive ('+e.message+').';
+    showLogin(msg);
+  }
+}
+function showLogin(msg){
+  document.getElementById('login').classList.remove('hide');
+  document.getElementById('lmsg').textContent=msg||'';
+}
+document.getElementById('lbtn').onclick=()=>tokenClient&&requestToken('select_account').then(start,()=>{});
+document.getElementById('logout').onclick=()=>{if(TOKEN&&window.google)google.accounts.oauth2.revoke(TOKEN,()=>{});location.reload()};
+window.addEventListener('load',()=>{
+  if(!window.google){showLogin('Gagal memuat login Google. Cek koneksi internet lalu muat ulang.');return}
+  tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,hosted_domain:'zuma.id',
+    scope:'https://www.googleapis.com/auth/drive.readonly',
+    callback:r=>{const w=tokenWait;tokenWait=null;if(r.error){w&&w.rej(r);return}TOKEN=r.access_token;w&&w.res()},
+    error_callback:e=>{const w=tokenWait;tokenWait=null;w&&w.rej(e)}});
+  showLogin();
+});
+</script></body></html>
